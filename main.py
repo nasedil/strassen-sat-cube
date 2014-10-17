@@ -103,7 +103,8 @@ q = [[[vf.next()
 # t_k_ic_jc_ia_ja_ib_jb = p_k_ic_jc_ia_ja_ib_jb xor p_(k+1)_ic_jc_ia_ja_ib_jb,
 # k in 1..6, {ic, jc, ia, ja, ib, jb} in 1..2;
 # and
-# t_7_ic_jc = c_ic_jc_ia_ja_ib_jb.
+# t_6_ic_jc_ia_ja_ib_jb = c_ic_jc_ia_ja_ib_jb,
+# {ic, jc, ia, ja, ib, jb} in 1..2;
 # The last one is rewritten as
 # t_7_ic_jc_ia_ja_ib_jb or not(t_7_ic_jc_ia_ja_ib_jb),
 # depending on c_ic_jc_ia_ja_ib_jb value, which is known by definition.
@@ -175,4 +176,21 @@ for k in range(6):
                                    negative=[vc])
                             cc.add(positive=[],
                                    negative=[vc, va, vb])
+
+# And last constraints:
+# t_6_ic_jc_ia_ja_ib_jb = c_ic_jc_ia_ja_ib_jb,
+# {ic, jc, ia, ja, ib, jb} in 1..2.
+
+for ic in range(2):
+    for jc in range(2):
+        for ia in range(2):
+            for ja in range(2):
+                for ib in range(2):
+                    for jb in range(2):
+                        if c[ic][jc][ia][ja][ib][jb]:
+                            cc.add(positive=[t[5][ic][jc][ia][ja][ib][jb]], negative=[])
+                        else:
+                            cc.add(positive=[], negative=[t[5][ic][jc][ia][ja][ib][jb]])
+
+# We have in the end 1028 variables and 3280 constraints.
 
