@@ -9,7 +9,7 @@ import satmaker
 
 # To make an input for a SAT-solver, we need to associate each variable with
 # a number automatically, while keeping string reference for ourselves.
-# For this we use a VariableFactory class.
+# For this we use a VariableFactory and ConstraintCollector classes.
 
 vf = satmaker.VariableFactory();
 cc = satmaker.ConstraintCollector();
@@ -45,7 +45,8 @@ m = [[[[[vf.next()
 # or in short:  c = a and b
 # which can be rewritten as
 # (c or not(a) or not(b)) and (not(c) or a) and (not(c) or b)
-# This is correct and tested in test.test_and_assignment().
+# This is correct and tested in test.test_and_assignment(),
+# and explained also in https://en.wikipedia.org/wiki/Tseitin_transformation
 
 for k in range(7):
     for ia in range(2):
@@ -194,3 +195,11 @@ for ic in range(2):
 
 # We have in the end 1028 variables and 3280 constraints.
 
+# Now we will output all the constraints to a file that will be an input to
+# a SAT solver.
+# For printing we will use a SatPrinter class.
+
+sp = satmaker.SatPrinter(vf, cc);
+file = open('input.txt', 'wt')
+sp.print(file)
+file.close()

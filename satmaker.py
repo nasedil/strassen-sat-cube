@@ -45,3 +45,29 @@ class ConstraintCollector(object):
         constraint["positive"] = positive
         constraint["negative"] = negative
         self.constraints.append(constraint)
+
+class SatPrinter(object):
+
+    """A class for printing SAT input."""
+
+    def __init__(self, vf, cc):
+        """Create a SAT printer.
+
+        Arguments:
+        vf: a variable factory;
+        cc: a constraints collector.
+        """
+        self.vf = vf
+        self.cc = cc
+
+    def print(self, file):
+        """Print SAT input into a file object."""
+        file.write('p cnf ' +
+                   str(self.vf.count) + ' ' +
+                   str(len(self.cc.constraints)) + '\n')
+        for constraint in self.cc.constraints:
+            for variable in constraint['positive']:
+                file.write(str(variable["number"]) + ' ')
+            for variable in constraint['negative']:
+                file.write('-' + str(variable["number"]) + ' ')
+            file.write('0 \n')
