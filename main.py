@@ -45,7 +45,7 @@ m = [[[[[vf.next()
 # or in short:  c = a and b
 # which can be rewritten as
 # (c or not(a) or not(b)) and (not(c) or a) and (not(c) or b)
-# This is correct and tested in test.test_initial_multiplication_constraint().
+# This is correct and tested in test.test_and_assignment().
 
 for k in range(7):
     for ia in range(2):
@@ -82,8 +82,10 @@ for ic in range(2):
         for l in range(2):
             c[ic][jc][ic][l][l][jc] = True
 
-# Now we define coefficients for linking multiplication and result verctors,
-# q_k_ic_jc, k in 1..7, {ic, jc} in 1..2.
+# Now we define coefficients q_k_ic_jc, k in 1..7, {ic, jc} in 1..2,
+# for linking multiplication and result verctors:
+# <xor for all k in 1..7> m_k_ia_ja_ib_jb and q_k_ic_jc = c_ic_jc_ia_ja_ib_jb
+# for {ic, jc, ia, ja, ib, jb} in 1..2.
 
 q = [[[vf.next()
        for jc in range(2)]
@@ -92,16 +94,85 @@ q = [[[vf.next()
 
 # Now we define second series of constraints,
 # that link multiplication vectors and result vectors.
-# For each {ic, jc, ia, ja, ib, jb} in 1..2:
-# <xor for all k in 1..7> m_k_ia_ja_ib_jb and q_k_ic_jc = c_ic_jc_ia_ja_ib_jb
-# We rewrite this as a step by step computation,
+# We rewrite previous constraints as a step by step computation,
 # with introducing additional variables p_k_ic_jc and t_k_ic_jc,
 # such that:
 # p_k_ic_jc_ia_ja_ib_jb = m_k_ia_ja_ib_jb and q_k_ic_jc,
 # k in 1..7, {ic, jc, ia, ja, ib, jb} in 1..2;
-# t_k_ic_jc_ia_ja_ib_jb = p_(k-1)_ic_jc_ia_ja_ib_jb xor p_(k-1)_ic_jc_ia_ja_ib_jb,
-# k in 2..7, {ic, jc, ia, ja, ib, jb} in 1..2;
+# and
+# t_k_ic_jc_ia_ja_ib_jb = p_k_ic_jc_ia_ja_ib_jb xor p_(k+1)_ic_jc_ia_ja_ib_jb,
+# k in 1..6, {ic, jc, ia, ja, ib, jb} in 1..2;
+# and
 # t_7_ic_jc = c_ic_jc_ia_ja_ib_jb.
-# The last one is rewritten as t_7_ic_jc_ia_ja_ib_jb or not(t_7_ic_jc_ia_ja_ib_jb),
+# The last one is rewritten as
+# t_7_ic_jc_ia_ja_ib_jb or not(t_7_ic_jc_ia_ja_ib_jb),
 # depending on c_ic_jc_ia_ja_ib_jb value, which is known by definition.
+
+# So we define variables p and constraints for them:
+
+p = [[[[[[[vf.next()
+           for jb in range(2)]
+          for ib in range(2)]
+         for ja in range(2)]
+        for ia in range(2)]
+       for jc in range(2)]
+      for ic in range(2)]
+     for k in range(7)]
+
+for k in range(7):
+    for ic in range(2):
+        for jc in range(2):
+            for ia in range(2):
+                for ja in range(2):
+                    for ib in range(2):
+                        for jb in range(2):
+                            va = m[k][ia][ja][ib][jb]
+                            vb = q[k][ic][jc]
+                            vc = p[k][ic][jc][ia][ja][ib][jb]
+                            cc.add(positive=[vc],
+                                   negative=[va, vb])
+                            cc.add(positive=[va],
+                                   negative=[vc])
+                            cc.add(positive=[vb],
+                                   negative=[vc])
+
+# So we define variables t and constraints for them. First, a transformation:
+# c = a xor b
+# can be rewritten as
+# c = (a or b) and (not(a) or not(b))
+# which in turn is
+# (c or not((a or b)) or not((not(a) or not(b)))) and (not(c) or (a or b)) and (not(c) or (not(a) or not(b)))
+# which is equal to
+# (c or (not(a) and not(b)) or (a and b)) and (not(c) or a or b) and (not(c) or not(a) or not(b))
+# which is equal to
+# (c or not(a) or b) and (c or a or not(b)) and (not(c) or a or b) and (not(c) or not(a) or not(b))
+# This is correct, see https://en.wikipedia.org/wiki/Tseitin_transformation
+
+t = [[[[[[[vf.next()
+           for jb in range(2)]
+          for ib in range(2)]
+         for ja in range(2)]
+        for ia in range(2)]
+       for jc in range(2)]
+      for ic in range(2)]
+     for k in range(6)]
+
+for k in range(6):
+    for ic in range(2):
+        for jc in range(2):
+            for ia in range(2):
+                for ja in range(2):
+                    for ib in range(2):
+                        for jb in range(2):
+                            va = p[k][ic][jc][ia][ja][ib][jb]
+                            vb = p[k+1][ic][jc][ia][ja][ib][jb]
+                            vc = t[k][ic][jc][ia][ja][ib][jb]
+                            cc.add(positive=[vc, va],
+                                   negative=[vb])
+                            cc.add(positive=[vc, vb],
+                                   negative=[va])
+                            cc.add(positive=[va, vb],
+                                   negative=[vc])
+                            cc.add(positive=[],
+                                   negative=[vc, va, vb])
 

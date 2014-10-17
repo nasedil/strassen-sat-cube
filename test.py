@@ -5,7 +5,7 @@ Created on Mon Oct 13 21:59:29 2014
 @author: genio
 """
 
-def test_initial_multiplication_constraint():
+def test_and_assignment():
     """It checks that our transformations of the constraint are correct.
 
     It checks whether
@@ -23,4 +23,4 @@ def test_initial_multiplication_constraint():
                     and (not(c) or b))
                 assert(expression_original == expression_concluded)
 
-test_initial_multiplication_constraint()
+test_and_assignment()
