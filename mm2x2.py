@@ -101,10 +101,11 @@ q = [[[vf.next()
 # p_k_ic_jc_ia_ja_ib_jb = m_k_ia_ja_ib_jb and q_k_ic_jc,
 # k in 1..7, {ic, jc, ia, ja, ib, jb} in 1..2;
 # and
-# t_k_ic_jc_ia_ja_ib_jb = p_k_ic_jc_ia_ja_ib_jb xor p_(k+1)_ic_jc_ia_ja_ib_jb,
-# k in 1..6, {ic, jc, ia, ja, ib, jb} in 1..2;
+# t_k_ic_jc_ia_ja_ib_jb = t_(k-1)_ic_jc_ia_ja_ib_jb xor p_k_ic_jc_ia_ja_ib_jb,
+# k in 2..7, {ic, jc, ia, ja, ib, jb} in 1..2,
+# t_1_ic_jc_ia_ja_ib_jb = p_1_ic_jc_ia_ja_ib_jb;
 # and
-# t_6_ic_jc_ia_ja_ib_jb = c_ic_jc_ia_ja_ib_jb,
+# t_7_ic_jc_ia_ja_ib_jb = c_ic_jc_ia_ja_ib_jb,
 # {ic, jc, ia, ja, ib, jb} in 1..2;
 # The last one is rewritten as
 # t_7_ic_jc_ia_ja_ib_jb or not(t_7_ic_jc_ia_ja_ib_jb),
@@ -159,14 +160,32 @@ t = [[[[[[[vf.next()
       for ic in range(2)]
      for k in range(6)]
 
-for k in range(6):
+for ic in range(2):
+    for jc in range(2):
+        for ia in range(2):
+            for ja in range(2):
+                for ib in range(2):
+                    for jb in range(2):
+                        va = p[0][ic][jc][ia][ja][ib][jb]
+                        vb = p[1][ic][jc][ia][ja][ib][jb]
+                        vc = t[0][ic][jc][ia][ja][ib][jb]
+                        cc.add(positive=[vc, va],
+                               negative=[vb])
+                        cc.add(positive=[vc, vb],
+                               negative=[va])
+                        cc.add(positive=[va, vb],
+                               negative=[vc])
+                        cc.add(positive=[],
+                               negative=[vc, va, vb])
+
+for k in range(1, 6):
     for ic in range(2):
         for jc in range(2):
             for ia in range(2):
                 for ja in range(2):
                     for ib in range(2):
                         for jb in range(2):
-                            va = p[k][ic][jc][ia][ja][ib][jb]
+                            va = t[k-1][ic][jc][ia][ja][ib][jb]
                             vb = p[k+1][ic][jc][ia][ja][ib][jb]
                             vc = t[k][ic][jc][ia][ja][ib][jb]
                             cc.add(positive=[vc, va],
@@ -202,4 +221,38 @@ for ic in range(2):
 sp = satmaker.SatPrinter(vf, cc);
 file = open('input.txt', 'wt')
 sp.print(file)
+file.close()
+
+# Now a SAT solver should be executed and store its output in output.txt file.
+# We get back data from the output to variables.
+
+file = open('output.txt', 'rt')
+sp.decode_output(file)
+file.close()
+
+# We print the important variables into a text file in easily readable form.
+
+file = open('solution.txt', 'wt')
+for k in range(7):
+    file.write('M_' + str(k+1) + ' = (')
+    members = []
+    for ia in range(2):
+        for ja in range(2):
+            if (a[k][ia][ja]['value']):
+                members.append('A' + str(ia+1) + '' + str(ja+1))
+    file.write(' + '.join(members) + ')(')
+    members = []
+    for ib in range(2):
+        for jb in range(2):
+            if (b[k][ib][jb]['value']):
+                members.append('B' + str(ib+1) + '' + str(jb+1))
+    file.write(' + '.join(members) + ')\n')
+for ic in range(2):
+    for jc in range(2):
+        file.write('C' + str(ic+1) + str(jc+1) + ' = ')
+        members = []
+        for k in range(7):
+            if q[k][ic][jc]['value']:
+                members.append('M' + str(k+1))
+        file.write(' + '.join(members) + '\n')
 file.close()
