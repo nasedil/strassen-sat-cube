@@ -106,81 +106,108 @@ for k in range(MULTIPLICATION_VECTORS):
                                         cc.add(positive=[vb],
                                                negative=[vc])
 
-# Now we calculate result vectors of the product matrix C (C=A*B).
+# Now we calculate result vectors of the product matrix D (D = A*B*C).
 
-c = []
-for ic in range(2):
-    c.append([])
-    for jc in range(2):
-        c[ic].append([])
-        for ia in range(2):
-            c[ic][jc].append([])
-            for ja in range(2):
-                c[ic][jc][ia].append([])
-                for ib in range(2):
-                    c[ic][jc][ia][ja].append([])
-                    for jb in range(2):
-                        c[ic][jc][ia][ja][ib].append(False)
-for ic in range(2):
-    for jc in range(2):
-        for l in range(2):
-            c[ic][jc][ic][l][l][jc] = True
+d = []
+for id in range(MATRIX_SIZE):
+    d.append([])
+    for jd in range(MATRIX_SIZE):
+        d[id].append([])
+        for ld in range(MATRIX_SIZE):
+            d[id][jd].append([])
+            for ia in range(MATRIX_SIZE):
+                d[id][jd][ld].append([])
+                for ja in range(MATRIX_SIZE):
+                    d[id][jd][ld][ia].append([])
+                    for la in range(MATRIX_SIZE):
+                        d[id][jd][ld][ia][ja].append([])
+                        for ib in range(MATRIX_SIZE):
+                            d[id][jd][ld][ia][ja][la].append([])
+                            for jb in range(MATRIX_SIZE):
+                                d[id][jd][ld][ia][ja][la][ib].append([])
+                                for lb in range(MATRIX_SIZE):
+                                    d[id][jd][ld][ia][ja][la][ib][jb].append([])
+                                    for ic in range(MATRIX_SIZE):
+                                        d[id][jd][ld][ia][ja][la][ib][jb][lb].append([])
+                                        for jc in range(MATRIX_SIZE):
+                                            d[id][jd][ld][ia][ja][la][ib][jb][lb][ic].append([])
+                                            for lc in range(MATRIX_SIZE):
+                                                d[id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc].append(False)
 
-# Now we define coefficients q_k_ic_jc, k in 1..7, {ic, jc} in 1..2,
-# for linking multiplication and result verctors:
-# <xor for all k in 1..7> m_k_ia_ja_ib_jb and q_k_ic_jc = c_ic_jc_ia_ja_ib_jb
-# for {ic, jc, ia, ja, ib, jb} in 1..2.
+for id in range(MATRIX_SIZE):
+    for jd in range(MATRIX_SIZE):
+        for ld in range(MATRIX_SIZE):
+            for o in range(MATRIX_SIZE):
+                d[id][jd][ld][id][jd][o][id][o][ld][o][jd][ld] = True
 
-q = [[[vf.next()
-       for jc in range(2)]
-      for ic in range(2)]
-     for k in range(7)]
+# Now we define coefficients q_k_id_jd_ld, k in 1..15, {id, jd, ld} in 1..2,
+# for linking multiplication and result vectors:
+# <xor for all k in 1..15> m_k_ia_ja_la_ib_jb_lb_ic_jc_lc and q_k_id_jd_ld = d_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc
+# for {id, jd, ld, ia, ja, la, ib, jb, lb, ic, jc, lc} in 1..2.
+
+q = [[[[vf.next()
+        for ld in range(MATRIX_SIZE)]
+       for jd in range(MATRIX_SIZE)]
+      for id in range(MATRIX_SIZE)]
+     for k in range(MULTIPLICATION_VECTORS)]
 
 # Now we define second series of constraints,
 # that link multiplication vectors and result vectors.
 # We rewrite previous constraints as a step by step computation,
-# with introducing additional variables p_k_ic_jc and t_k_ic_jc,
+# with introducing additional variables p_k_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc and t_k_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc,
 # such that:
-# p_k_ic_jc_ia_ja_ib_jb = m_k_ia_ja_ib_jb and q_k_ic_jc,
-# k in 1..7, {ic, jc, ia, ja, ib, jb} in 1..2;
+# p_k_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc = m_k_ia_ja_la_ib_jb_lb_ic_jc_lc and q_k_id_jd_ld,
+# k in 1..15, {id, jd, ld, ia, ja, la, ib, jb, lb, ic, jc, lc} in 1..2;
 # and
-# t_k_ic_jc_ia_ja_ib_jb = t_(k-1)_ic_jc_ia_ja_ib_jb xor p_k_ic_jc_ia_ja_ib_jb,
-# k in 2..7, {ic, jc, ia, ja, ib, jb} in 1..2,
-# t_1_ic_jc_ia_ja_ib_jb = p_1_ic_jc_ia_ja_ib_jb;
+# t_k_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc = t_(k-1)_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc xor p_k_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc,
+# k in 2..15, {id, jd, ld, ia, ja, la, ib, jb, lb, ic, jc, lc} in 1..2,
+# t_1_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc = p_1_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc;
 # and
-# t_7_ic_jc_ia_ja_ib_jb = c_ic_jc_ia_ja_ib_jb,
-# {ic, jc, ia, ja, ib, jb} in 1..2;
+# t_15_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc = d_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc,
+# {id, jd, ld, ia, ja, la, ib, jb, lb, ic, jc, lc} in 1..2;
 # The last one is rewritten as
-# t_7_ic_jc_ia_ja_ib_jb or not(t_7_ic_jc_ia_ja_ib_jb),
-# depending on c_ic_jc_ia_ja_ib_jb value, which is known by definition.
+# t_15_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc or not(t_15_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc),
+# depending on d_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc value, which is known by definition.
 
 # So we define variables p and constraints for them:
 
-p = [[[[[[[vf.next()
-           for jb in range(2)]
-          for ib in range(2)]
-         for ja in range(2)]
-        for ia in range(2)]
-       for jc in range(2)]
-      for ic in range(2)]
-     for k in range(7)]
+p = [[[[[[[[[[[[[vf.next()
+                 for lc in range(MATRIX_SIZE)]
+                for jc in range(MATRIX_SIZE)]
+               for ic in range(MATRIX_SIZE)]
+              for lb in range(MATRIX_SIZE)]
+             for jb in range(MATRIX_SIZE)]
+            for ib in range(MATRIX_SIZE)]
+           for la in range(MATRIX_SIZE)]
+          for ja in range(MATRIX_SIZE)]
+         for ia in range(MATRIX_SIZE)]
+        for ld in range(MATRIX_SIZE)]
+       for jd in range(MATRIX_SIZE)]
+      for id in range(MATRIX_SIZE)]
+     for k in range(MULTIPLICATION_VECTORS)]
 
-for k in range(7):
-    for ic in range(2):
-        for jc in range(2):
-            for ia in range(2):
-                for ja in range(2):
-                    for ib in range(2):
-                        for jb in range(2):
-                            va = m[k][ia][ja][ib][jb]
-                            vb = q[k][ic][jc]
-                            vc = p[k][ic][jc][ia][ja][ib][jb]
-                            cc.add(positive=[vc],
-                                   negative=[va, vb])
-                            cc.add(positive=[va],
-                                   negative=[vc])
-                            cc.add(positive=[vb],
-                                   negative=[vc])
+for k in range(MULTIPLICATION_VECTORS):
+    for id in range(MATRIX_SIZE):
+        for jd in range(MATRIX_SIZE):
+            for ld in range(MATRIX_SIZE):
+                for ia in range(MATRIX_SIZE):
+                    for ja in range(MATRIX_SIZE):
+                        for la in range(MATRIX_SIZE):
+                            for ib in range(MATRIX_SIZE):
+                                for jb in range(MATRIX_SIZE):
+                                    for lb in range(MATRIX_SIZE):
+                                        for ic in range(MATRIX_SIZE):
+                                            for jc in range(MATRIX_SIZE):
+                                                for lc in range(MATRIX_SIZE):
+                                                    va = m[k][ia][ja][la][ib][jb][lb][ic][jc][lc]
+                                                    vb = q[k][id][jd][ld]
+                                                    vc = p[k][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
+                                                    cc.add(positive=[vc],
+                                                           negative=[va, vb])
+                                                    cc.add(positive=[va],
+                                                           negative=[vc])
+                                                    cc.add(positive=[vb],
+                                                           negative=[vc])
 
 # So we define variables t and constraints for them. First, a transformation:
 # c = a xor b
@@ -192,80 +219,104 @@ for k in range(7):
 # (c or (not(a) and not(b)) or (a and b)) and (not(c) or a or b) and (not(c) or not(a) or not(b))
 # which is equal to
 # (c or not(a) or b) and (c or a or not(b)) and (not(c) or a or b) and (not(c) or not(a) or not(b))
-# This is correct, see https://en.wikipedia.org/wiki/Tseitin_transformation
+# This is correct, Tseitin transformations
 
-t = [[[[[[[vf.next()
-           for jb in range(2)]
-          for ib in range(2)]
-         for ja in range(2)]
-        for ia in range(2)]
-       for jc in range(2)]
-      for ic in range(2)]
-     for k in range(6)]
+t = [[[[[[[[[[[[[vf.next()
+                 for lc in range(MATRIX_SIZE)]
+                for jc in range(MATRIX_SIZE)]
+               for ic in range(MATRIX_SIZE)]
+              for lb in range(MATRIX_SIZE)]
+             for jb in range(MATRIX_SIZE)]
+            for ib in range(MATRIX_SIZE)]
+           for la in range(MATRIX_SIZE)]
+          for ja in range(MATRIX_SIZE)]
+         for ia in range(MATRIX_SIZE)]
+        for ld in range(MATRIX_SIZE)]
+       for jd in range(MATRIX_SIZE)]
+      for id in range(MATRIX_SIZE)]
+     for k in range(MULTIPLICATION_VECTORS-1)]
 
-for ic in range(2):
-    for jc in range(2):
-        for ia in range(2):
-            for ja in range(2):
-                for ib in range(2):
-                    for jb in range(2):
-                        va = p[0][ic][jc][ia][ja][ib][jb]
-                        vb = p[1][ic][jc][ia][ja][ib][jb]
-                        vc = t[0][ic][jc][ia][ja][ib][jb]
-                        cc.add(positive=[vc, va],
-                               negative=[vb])
-                        cc.add(positive=[vc, vb],
-                               negative=[va])
-                        cc.add(positive=[va, vb],
-                               negative=[vc])
-                        cc.add(positive=[],
-                               negative=[vc, va, vb])
+for id in range(MATRIX_SIZE):
+    for jd in range(MATRIX_SIZE):
+        for ld in range(MATRIX_SIZE):
+            for ia in range(MATRIX_SIZE):
+                for ja in range(MATRIX_SIZE):
+                    for la in range(MATRIX_SIZE):
+                        for ib in range(MATRIX_SIZE):
+                            for jb in range(MATRIX_SIZE):
+                                for lb in range(MATRIX_SIZE):
+                                    for ic in range(MATRIX_SIZE):
+                                        for jc in range(MATRIX_SIZE):
+                                            for lc in range(MATRIX_SIZE):
+                                                va = p[0][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
+                                                vb = p[1][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
+                                                vc = t[0][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
+                                                cc.add(positive=[vc, va],
+                                                       negative=[vb])
+                                                cc.add(positive=[vc, vb],
+                                                       negative=[va])
+                                                cc.add(positive=[va, vb],
+                                                       negative=[vc])
+                                                cc.add(positive=[],
+                                                       negative=[vc, va, vb])
 
-for k in range(1, 6):
-    for ic in range(2):
-        for jc in range(2):
-            for ia in range(2):
-                for ja in range(2):
-                    for ib in range(2):
-                        for jb in range(2):
-                            va = t[k-1][ic][jc][ia][ja][ib][jb]
-                            vb = p[k+1][ic][jc][ia][ja][ib][jb]
-                            vc = t[k][ic][jc][ia][ja][ib][jb]
-                            cc.add(positive=[vc, va],
-                                   negative=[vb])
-                            cc.add(positive=[vc, vb],
-                                   negative=[va])
-                            cc.add(positive=[va, vb],
-                                   negative=[vc])
-                            cc.add(positive=[],
-                                   negative=[vc, va, vb])
+for k in range(1, MULTIPLICATION_VECTORS-1):
+    for id in range(MATRIX_SIZE):
+        for jd in range(MATRIX_SIZE):
+            for ld in range(MATRIX_SIZE):
+                for ia in range(MATRIX_SIZE):
+                    for ja in range(MATRIX_SIZE):
+                        for la in range(MATRIX_SIZE):
+                            for ib in range(MATRIX_SIZE):
+                                for jb in range(MATRIX_SIZE):
+                                    for lb in range(MATRIX_SIZE):
+                                        for ic in range(MATRIX_SIZE):
+                                            for jc in range(MATRIX_SIZE):
+                                                for lc in range(MATRIX_SIZE):
+                                                    va = t[k-1][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
+                                                    vb = p[k+1][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
+                                                    vc = t[k][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
+                                                    cc.add(positive=[vc, va],
+                                                           negative=[vb])
+                                                    cc.add(positive=[vc, vb],
+                                                           negative=[va])
+                                                    cc.add(positive=[va, vb],
+                                                           negative=[vc])
+                                                    cc.add(positive=[],
+                                                           negative=[vc, va, vb])
 
 # And last constraints:
-# t_6_ic_jc_ia_ja_ib_jb = c_ic_jc_ia_ja_ib_jb,
-# {ic, jc, ia, ja, ib, jb} in 1..2.
+# t_14_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc = c_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc,
+# {id, jd, ld, ia, ja, la, ib, jb, lb, ic, jc, lc} in 1..2.
 
-for ic in range(2):
-    for jc in range(2):
-        for ia in range(2):
-            for ja in range(2):
-                for ib in range(2):
-                    for jb in range(2):
-                        if c[ic][jc][ia][ja][ib][jb]:
-                            cc.add(positive=[t[5][ic][jc][ia][ja][ib][jb]], negative=[])
-                        else:
-                            cc.add(positive=[], negative=[t[5][ic][jc][ia][ja][ib][jb]])
+for id in range(MATRIX_SIZE):
+    for jd in range(MATRIX_SIZE):
+        for ld in range(MATRIX_SIZE):
+            for ia in range(MATRIX_SIZE):
+                for ja in range(MATRIX_SIZE):
+                    for la in range(MATRIX_SIZE):
+                        for ib in range(MATRIX_SIZE):
+                            for jb in range(MATRIX_SIZE):
+                                for lb in range(MATRIX_SIZE):
+                                    for ic in range(MATRIX_SIZE):
+                                        for jc in range(MATRIX_SIZE):
+                                            for lc in range(MATRIX_SIZE):
+                                                if d[id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]:
+                                                    cc.add(positive=[t[MULTIPLICATION_VECTORS-2][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]], negative=[])
+                                                else:
+                                                    cc.add(positive=[], negative=[t[MULTIPLICATION_VECTORS-2][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]])
 
-# We have in the end 1028 variables and 3280 constraints.
+# We have in the end 127904 variables and 443712 constraints.
 
 # Now we will output all the constraints to a file that will be an input to
 # a SAT solver.
 # For printing we will use a SatPrinter class.
 
 sp = satmaker.SatPrinter(vf, cc);
-file = open('input.txt', 'wt')
+file = open('input-3d.txt', 'wt')
 sp.print(file)
 file.close()
-
+'''
 # Now a SAT solver should be executed and store its output in output.txt file.
 # We get back data from the output to variables.
 
@@ -299,3 +350,4 @@ for ic in range(2):
                 members.append('M' + str(k+1))
         file.write(' + '.join(members) + '\n')
 file.close()
+'''
