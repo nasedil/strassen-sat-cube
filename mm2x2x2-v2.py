@@ -148,58 +148,14 @@ q = [[[[vf.next()
 # The last one is rewritten as
 # t_15_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc or not(t_15_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc),
 # depending on d_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc value, which is known by definition.
-
-# So we define variables p and constraints for them:
-
-p = [[[[[[[[[[[[[vf.next()
-                 for lc in range(MATRIX_SIZE)]
-                for jc in range(MATRIX_SIZE)]
-               for ic in range(MATRIX_SIZE)]
-              for lb in range(MATRIX_SIZE)]
-             for jb in range(MATRIX_SIZE)]
-            for ib in range(MATRIX_SIZE)]
-           for la in range(MATRIX_SIZE)]
-          for ja in range(MATRIX_SIZE)]
-         for ia in range(MATRIX_SIZE)]
-        for ld in range(MATRIX_SIZE)]
-       for jd in range(MATRIX_SIZE)]
-      for id in range(MATRIX_SIZE)]
-     for k in range(MULTIPLICATION_VECTORS)]
-
-for k in range(MULTIPLICATION_VECTORS):
-    for id in range(MATRIX_SIZE):
-        for jd in range(MATRIX_SIZE):
-            for ld in range(MATRIX_SIZE):
-                for ia in range(MATRIX_SIZE):
-                    for ja in range(MATRIX_SIZE):
-                        for la in range(MATRIX_SIZE):
-                            for ib in range(MATRIX_SIZE):
-                                for jb in range(MATRIX_SIZE):
-                                    for lb in range(MATRIX_SIZE):
-                                        for ic in range(MATRIX_SIZE):
-                                            for jc in range(MATRIX_SIZE):
-                                                for lc in range(MATRIX_SIZE):
-                                                    va = m[k][ia][ja][la][ib][jb][lb][ic][jc][lc]
-                                                    vb = q[k][id][jd][ld]
-                                                    vc = p[k][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
-                                                    cc.add(positive=[vc],
-                                                           negative=[va, vb])
-                                                    cc.add(positive=[va],
-                                                           negative=[vc])
-                                                    cc.add(positive=[vb],
-                                                           negative=[vc])
-
-# So we define variables t and constraints for them. First, a transformation:
-# c = a xor b
-# can be rewritten as
-# c = (a or b) and (not(a) or not(b))
-# which in turn is
-# (c or not((a or b)) or not((not(a) or not(b)))) and (not(c) or (a or b)) and (not(c) or (not(a) or not(b)))
-# which is equal to
-# (c or (not(a) and not(b)) or (a and b)) and (not(c) or a or b) and (not(c) or not(a) or not(b))
-# which is equal to
-# (c or not(a) or b) and (c or a or not(b)) and (not(c) or a or b) and (not(c) or not(a) or not(b))
-# This is correct, Tseitin transformations
+# However, we don't introduce p variables in code, and instead use a transformation:
+# d = (a and e) xor (b and c)
+# is equivalent to
+# (~a | ~e | ~b | ~c | ~d) ∧ (a ∨ b ∨ ~d) ∧ (e ∨ b ∨ ~d) ∧ (a ∨ c ∨ ~d) ∧ (e ∨ c ∨ ~d) ∧ (a ∨ ~b | ~c ∨ d) ∧ (e ∨ ~b | ~c ∨ d) ∧ (~a | ~e ∨ b ∨ d) ∧ (~a | ~e ∨ c ∨ d).
+# And a transformation:
+# d = a xor (b and c)
+# is equivalent to
+# (~a | ~b | ~c | ~d) ∧ (a ∨ b ∨ ~d) ∧ (a ∨ c ∨ ~d) ∧ (a ∨ ~b | ~c ∨ d) ∧ (~a ∨ b ∨ d) ∧ (~a ∨ c ∨ d).
 
 t = [[[[[[[[[[[[[vf.next()
                  for lc in range(MATRIX_SIZE)]
@@ -228,17 +184,27 @@ for id in range(MATRIX_SIZE):
                                     for ic in range(MATRIX_SIZE):
                                         for jc in range(MATRIX_SIZE):
                                             for lc in range(MATRIX_SIZE):
-                                                va = p[0][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
-                                                vb = p[1][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
-                                                vc = t[0][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
-                                                cc.add(positive=[vc, va],
-                                                       negative=[vb])
-                                                cc.add(positive=[vc, vb],
-                                                       negative=[va])
+                                                va = m[0][ia][ja][la][ib][jb][lb][ic][jc][lc]
+                                                ve = q[0][id][jd][ld]
+                                                vb = m[1][ia][ja][la][ib][jb][lb][ic][jc][lc]
+                                                vc = q[1][id][jd][ld]
+                                                vd = t[0][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
                                                 cc.add(positive=[va, vb],
-                                                       negative=[vc])
-                                                cc.add(positive=[],
-                                                       negative=[vc, va, vb])
+                                                       negative=[vd])
+                                                cc.add(positive=[va, vc],
+                                                       negative=[vd])
+                                                cc.add(positive=[ve, vb],
+                                                       negative=[vd])
+                                                cc.add(positive=[ve, vc],
+                                                       negative=[vd])
+                                                cc.add(positive=[va, vd],
+                                                       negative=[vb, vc])
+                                                cc.add(positive=[ve, vd],
+                                                       negative=[vb, vc])
+                                                cc.add(positive=[vb, vd],
+                                                       negative=[va, ve])
+                                                cc.add(positive=[vc, vd],
+                                                       negative=[va, ve])
 
 for k in range(1, MULTIPLICATION_VECTORS-1):
     for id in range(MATRIX_SIZE):
@@ -254,16 +220,21 @@ for k in range(1, MULTIPLICATION_VECTORS-1):
                                             for jc in range(MATRIX_SIZE):
                                                 for lc in range(MATRIX_SIZE):
                                                     va = t[k-1][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
-                                                    vb = p[k+1][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
-                                                    vc = t[k][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
-                                                    cc.add(positive=[vc, va],
-                                                           negative=[vb])
-                                                    cc.add(positive=[vc, vb],
-                                                           negative=[va])
-                                                    cc.add(positive=[va, vb],
-                                                           negative=[vc])
+                                                    vb = m[k+1][ia][ja][la][ib][jb][lb][ic][jc][lc]
+                                                    vc = q[k+1][id][jd][ld]
+                                                    vd = t[k][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
                                                     cc.add(positive=[],
-                                                           negative=[vc, va, vb])
+                                                           negative=[va, vb, vc, vd])
+                                                    cc.add(positive=[va, vb],
+                                                           negative=[vd])
+                                                    cc.add(positive=[va, vc],
+                                                           negative=[vd])
+                                                    cc.add(positive=[va, vd],
+                                                           negative=[vb, vc])
+                                                    cc.add(positive=[vb, vd],
+                                                           negative=[va])
+                                                    cc.add(positive=[vc, vd],
+                                                           negative=[va])
 
 # And last constraints:
 # t_14_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc = c_id_jd_ld_ia_ja_la_ib_jb_lb_ic_jc_lc,
@@ -286,7 +257,7 @@ for id in range(MATRIX_SIZE):
                                                 else:
                                                     cc.add(positive=[], negative=[t[MULTIPLICATION_VECTORS-2][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]])
 
-# We have in the end 127904 variables and 443712 constraints.
+# We have in the end 65504 variables and 387072 constraints.
 
 # Now we will output all the constraints to a file that will be an input to
 # a SAT solver.
