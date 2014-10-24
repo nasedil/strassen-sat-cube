@@ -189,6 +189,8 @@ for id in range(MATRIX_SIZE):
                                                 vb = m[1][ia][ja][la][ib][jb][lb][ic][jc][lc]
                                                 vc = q[1][id][jd][ld]
                                                 vd = t[0][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]
+                                                cc.add(positive=[],
+                                                       negative=[va, ve, vb, vc, vd])
                                                 cc.add(positive=[va, vb],
                                                        negative=[vd])
                                                 cc.add(positive=[va, vc],
