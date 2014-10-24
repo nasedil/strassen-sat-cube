@@ -267,38 +267,47 @@ sp = satmaker.SatPrinter(vf, cc);
 file = open('input-3d.txt', 'wt')
 sp.print(file)
 file.close()
-'''
+
 # Now a SAT solver should be executed and store its output in output.txt file.
 # We get back data from the output to variables.
 
-file = open('output.txt', 'rt')
+file = open('output-3d.txt', 'rt')
 sp.decode_output(file)
 file.close()
 
 # We print the important variables into a text file in easily readable form.
 
-file = open('solution.txt', 'wt')
-for k in range(7):
+file = open('solution-3d.txt', 'wt')
+for k in range(MULTIPLICATION_VECTORS):
     file.write('M_' + str(k+1) + ' = (')
     members = []
-    for ia in range(2):
-        for ja in range(2):
-            if (a[k][ia][ja]['value']):
-                members.append('A' + str(ia+1) + '' + str(ja+1))
+    for ia in range(MATRIX_SIZE):
+        for ja in range(MATRIX_SIZE):
+            for la in range(MATRIX_SIZE):
+                if (a[k][ia][ja][la]['value']):
+                    members.append('A' + str(ia+1) + '' + str(ja+1) + '' + str(la+1))
     file.write(' + '.join(members) + ')(')
     members = []
-    for ib in range(2):
-        for jb in range(2):
-            if (b[k][ib][jb]['value']):
-                members.append('B' + str(ib+1) + '' + str(jb+1))
+    for ib in range(MATRIX_SIZE):
+        for jb in range(MATRIX_SIZE):
+            for lb in range(MATRIX_SIZE):
+                if (b[k][ib][jb][lb]['value']):
+                    members.append('B' + str(ib+1) + '' + str(jb+1) + '' + str(lb+1))
+    file.write(' + '.join(members) + ')(')
+    members = []
+    for ic in range(MATRIX_SIZE):
+        for jc in range(MATRIX_SIZE):
+            for lc in range(MATRIX_SIZE):
+                if (c[k][ic][jc][lc]['value']):
+                    members.append('C' + str(ic+1) + '' + str(jc+1) + '' + str(lc+1))
     file.write(' + '.join(members) + ')\n')
-for ic in range(2):
-    for jc in range(2):
-        file.write('C' + str(ic+1) + str(jc+1) + ' = ')
-        members = []
-        for k in range(7):
-            if q[k][ic][jc]['value']:
-                members.append('M' + str(k+1))
-        file.write(' + '.join(members) + '\n')
+for id in range(MATRIX_SIZE):
+    for jd in range(MATRIX_SIZE):
+        for ld in range(MATRIX_SIZE):
+            file.write('D' + str(id+1) + str(jd+1) + str(ld+1) + ' = ')
+            members = []
+            for k in range(MULTIPLICATION_VECTORS):
+                if q[k][id][jd][ld]['value']:
+                    members.append('M' + str(k+1))
+            file.write(' + '.join(members) + '\n')
 file.close()
-'''
