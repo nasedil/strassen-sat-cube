@@ -16,8 +16,8 @@ cc = satmaker.ConstraintCollector();
 
 # Here we define constants: size and numbers of multiplication vectors.
 
-MATRIX_SIZE = 2
-MULTIPLICATION_VECTORS = 7
+MATRIX_SIZE = 3
+MULTIPLICATION_VECTORS = 26
 
 # We start with basic variables, 8 variables for each of the 7
 # final computed multiplications:  4 for each of elements of first matrix (A),
@@ -224,14 +224,14 @@ for ic in range(MATRIX_SIZE):
 # For printing we will use a SatPrinter class.
 
 sp = satmaker.SatPrinter(vf, cc);
-file = open('input-2x2.txt', 'wt')
+file = open('input-3x3.txt', 'wt')
 sp.print(file)
 file.close()
 
 # Now a SAT solver should be executed and store its output in output.txt file.
 # We get back data from the output to variables.
 """
-file = open('output-2x2.txt', 'rt')
+file = open('output-3x3.txt', 'rt')
 sp.decode_output(file)
 file.close()
 
