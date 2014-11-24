@@ -14,29 +14,34 @@ import satmaker
 vf = satmaker.VariableFactory();
 cc = satmaker.ConstraintCollector();
 
+# Here we define constants: size and numbers of multiplication vectors.
+
+MATRIX_SIZE = 2
+MULTIPLICATION_VECTORS = 7
+
 # We start with basic variables, 8 variables for each of the 7
 # final computed multiplications:  4 for each of elements of first matrix (A),
 # and 4 for second matrix (B).
 
 a = [[[vf.next()
-       for ja in range(2)]
-      for ia in range(2)]
-     for k in range(7)]
+       for ja in range(MATRIX_SIZE)]
+      for ia in range(MATRIX_SIZE)]
+     for k in range(MULTIPLICATION_VECTORS)]
 b = [[[vf.next()
-       for jb in range(2)]
-      for ib in range(2)]
-     for k in range(7)]
+       for jb in range(MATRIX_SIZE)]
+      for ib in range(MATRIX_SIZE)]
+     for k in range(MULTIPLICATION_VECTORS)]
 
 # For each multiplication vector m_k we define a variable
 # for each combination of a and b variables
 # that correspond to value of their product (exists or not in m_k).
 
 m = [[[[[vf.next()
-         for jb in range(2)]
-        for ib in range(2)]
-       for ja in range(2)]
-      for ia in range(2)]
-     for k in range(7)]
+         for jb in range(MATRIX_SIZE)]
+        for ib in range(MATRIX_SIZE)]
+       for ja in range(MATRIX_SIZE)]
+      for ia in range(MATRIX_SIZE)]
+     for k in range(MULTIPLICATION_VECTORS)]
 
 # Now we define first series of constraints,
 # that link basic variables and multiplication vectors.
@@ -48,11 +53,11 @@ m = [[[[[vf.next()
 # This is correct and tested in test.test_and_assignment(),
 # and explained also in https://en.wikipedia.org/wiki/Tseitin_transformation
 
-for k in range(7):
-    for ia in range(2):
-        for ja in range(2):
-            for ib in range(2):
-                for jb in range(2):
+for k in range(MULTIPLICATION_VECTORS):
+    for ia in range(MATRIX_SIZE):
+        for ja in range(MATRIX_SIZE):
+            for ib in range(MATRIX_SIZE):
+                for jb in range(MATRIX_SIZE):
                     va = a[k][ia][ja]
                     vb = b[k][ib][jb]
                     vc = m[k][ia][ja][ib][jb]
@@ -66,21 +71,21 @@ for k in range(7):
 # Now we calculate result vectors of the product matrix C (C=A*B).
 
 c = []
-for ic in range(2):
+for ic in range(MATRIX_SIZE):
     c.append([])
-    for jc in range(2):
+    for jc in range(MATRIX_SIZE):
         c[ic].append([])
-        for ia in range(2):
+        for ia in range(MATRIX_SIZE):
             c[ic][jc].append([])
-            for ja in range(2):
+            for ja in range(MATRIX_SIZE):
                 c[ic][jc][ia].append([])
-                for ib in range(2):
+                for ib in range(MATRIX_SIZE):
                     c[ic][jc][ia][ja].append([])
-                    for jb in range(2):
+                    for jb in range(MATRIX_SIZE):
                         c[ic][jc][ia][ja][ib].append(False)
-for ic in range(2):
-    for jc in range(2):
-        for l in range(2):
+for ic in range(MATRIX_SIZE):
+    for jc in range(MATRIX_SIZE):
+        for l in range(MATRIX_SIZE):
             c[ic][jc][ic][l][l][jc] = True
 
 # Now we define coefficients q_k_ic_jc, k in 1..7, {ic, jc} in 1..2,
@@ -89,9 +94,9 @@ for ic in range(2):
 # for {ic, jc, ia, ja, ib, jb} in 1..2.
 
 q = [[[vf.next()
-       for jc in range(2)]
-      for ic in range(2)]
-     for k in range(7)]
+       for jc in range(MATRIX_SIZE)]
+      for ic in range(MATRIX_SIZE)]
+     for k in range(MULTIPLICATION_VECTORS)]
 
 # Now we define second series of constraints,
 # that link multiplication vectors and result vectors.
@@ -114,21 +119,21 @@ q = [[[vf.next()
 # So we define variables p and constraints for them:
 
 p = [[[[[[[vf.next()
-           for jb in range(2)]
-          for ib in range(2)]
-         for ja in range(2)]
-        for ia in range(2)]
-       for jc in range(2)]
-      for ic in range(2)]
-     for k in range(7)]
+           for jb in range(MATRIX_SIZE)]
+          for ib in range(MATRIX_SIZE)]
+         for ja in range(MATRIX_SIZE)]
+        for ia in range(MATRIX_SIZE)]
+       for jc in range(MATRIX_SIZE)]
+      for ic in range(MATRIX_SIZE)]
+     for k in range(MATRIX_SIZE)]
 
-for k in range(7):
-    for ic in range(2):
-        for jc in range(2):
-            for ia in range(2):
-                for ja in range(2):
-                    for ib in range(2):
-                        for jb in range(2):
+for k in range(MULTIPLICATION_VECTORS):
+    for ic in range(MATRIX_SIZE):
+        for jc in range(MATRIX_SIZE):
+            for ia in range(MATRIX_SIZE):
+                for ja in range(MATRIX_SIZE):
+                    for ib in range(MATRIX_SIZE):
+                        for jb in range(MATRIX_SIZE):
                             va = m[k][ia][ja][ib][jb]
                             vb = q[k][ic][jc]
                             vc = p[k][ic][jc][ia][ja][ib][jb]
@@ -152,20 +157,20 @@ for k in range(7):
 # This is correct, see https://en.wikipedia.org/wiki/Tseitin_transformation
 
 t = [[[[[[[vf.next()
-           for jb in range(2)]
-          for ib in range(2)]
-         for ja in range(2)]
-        for ia in range(2)]
-       for jc in range(2)]
-      for ic in range(2)]
-     for k in range(6)]
+           for jb in range(MATRIX_SIZE)]
+          for ib in range(MATRIX_SIZE)]
+         for ja in range(MATRIX_SIZE)]
+        for ia in range(MATRIX_SIZE)]
+       for jc in range(MATRIX_SIZE)]
+      for ic in range(MATRIX_SIZE)]
+     for k in range(MULTIPLICATION_VECTORS-1)]
 
-for ic in range(2):
-    for jc in range(2):
-        for ia in range(2):
-            for ja in range(2):
-                for ib in range(2):
-                    for jb in range(2):
+for ic in range(MATRIX_SIZE):
+    for jc in range(MATRIX_SIZE):
+        for ia in range(MATRIX_SIZE):
+            for ja in range(MATRIX_SIZE):
+                for ib in range(MATRIX_SIZE):
+                    for jb in range(MATRIX_SIZE):
                         va = p[0][ic][jc][ia][ja][ib][jb]
                         vb = p[1][ic][jc][ia][ja][ib][jb]
                         vc = t[0][ic][jc][ia][ja][ib][jb]
@@ -178,13 +183,13 @@ for ic in range(2):
                         cc.add(positive=[],
                                negative=[vc, va, vb])
 
-for k in range(1, 6):
-    for ic in range(2):
-        for jc in range(2):
-            for ia in range(2):
-                for ja in range(2):
-                    for ib in range(2):
-                        for jb in range(2):
+for k in range(1, MULTIPLICATION_VECTORS-1):
+    for ic in range(MATRIX_SIZE):
+        for jc in range(MATRIX_SIZE):
+            for ia in range(MATRIX_SIZE):
+                for ja in range(MATRIX_SIZE):
+                    for ib in range(MATRIX_SIZE):
+                        for jb in range(MATRIX_SIZE):
                             va = t[k-1][ic][jc][ia][ja][ib][jb]
                             vb = p[k+1][ic][jc][ia][ja][ib][jb]
                             vc = t[k][ic][jc][ia][ja][ib][jb]
@@ -201,16 +206,16 @@ for k in range(1, 6):
 # t_6_ic_jc_ia_ja_ib_jb = c_ic_jc_ia_ja_ib_jb,
 # {ic, jc, ia, ja, ib, jb} in 1..2.
 
-for ic in range(2):
-    for jc in range(2):
-        for ia in range(2):
-            for ja in range(2):
-                for ib in range(2):
-                    for jb in range(2):
+for ic in range(MATRIX_SIZE):
+    for jc in range(MATRIX_SIZE):
+        for ia in range(MATRIX_SIZE):
+            for ja in range(MATRIX_SIZE):
+                for ib in range(MATRIX_SIZE):
+                    for jb in range(MATRIX_SIZE):
                         if c[ic][jc][ia][ja][ib][jb]:
-                            cc.add(positive=[t[5][ic][jc][ia][ja][ib][jb]], negative=[])
+                            cc.add(positive=[t[MULTIPLICATION_VECTORS-2][ic][jc][ia][ja][ib][jb]], negative=[])
                         else:
-                            cc.add(positive=[], negative=[t[5][ic][jc][ia][ja][ib][jb]])
+                            cc.add(positive=[], negative=[t[MULTIPLICATION_VECTORS-2][ic][jc][ia][ja][ib][jb]])
 
 # We have in the end 1028 variables and 3280 constraints.
 
@@ -233,25 +238,25 @@ file.close()
 # We print the important variables into a text file in easily readable form.
 
 file = open('solution.txt', 'wt')
-for k in range(7):
+for k in range(MULTIPLICATION_VECTORS):
     file.write('M_' + str(k+1) + ' = (')
     members = []
-    for ia in range(2):
-        for ja in range(2):
+    for ia in range(MATRIX_SIZE):
+        for ja in range(MATRIX_SIZE):
             if (a[k][ia][ja]['value']):
                 members.append('A' + str(ia+1) + '' + str(ja+1))
     file.write(' + '.join(members) + ')(')
     members = []
-    for ib in range(2):
-        for jb in range(2):
+    for ib in range(MATRIX_SIZE):
+        for jb in range(MATRIX_SIZE):
             if (b[k][ib][jb]['value']):
                 members.append('B' + str(ib+1) + '' + str(jb+1))
     file.write(' + '.join(members) + ')\n')
-for ic in range(2):
-    for jc in range(2):
+for ic in range(MATRIX_SIZE):
+    for jc in range(MATRIX_SIZE):
         file.write('C' + str(ic+1) + str(jc+1) + ' = ')
         members = []
-        for k in range(7):
+        for k in range(MULTIPLICATION_VECTORS):
             if q[k][ic][jc]['value']:
                 members.append('M' + str(k+1))
         file.write(' + '.join(members) + '\n')
