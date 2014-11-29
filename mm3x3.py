@@ -17,7 +17,7 @@ cc = satmaker.ConstraintCollector();
 # Here we define constants: size and numbers of multiplication vectors.
 
 MATRIX_SIZE = 3
-MULTIPLICATION_VECTORS = 26
+MULTIPLICATION_VECTORS = 23
 
 # We start with basic variables, 8 variables for each of the 7
 # final computed multiplications:  4 for each of elements of first matrix (A),

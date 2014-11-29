@@ -272,7 +272,7 @@ file.close()
 
 # Now a SAT solver should be executed and store its output in output.txt file.
 # We get back data from the output to variables.
-
+'''
 file = open('output-3d.txt', 'rt')
 sp.decode_output(file)
 file.close()
@@ -313,3 +313,4 @@ for id in range(MATRIX_SIZE):
                     members.append('M' + str(k+1))
             file.write(' + '.join(members) + '\n')
 file.close()
+'''
