@@ -266,7 +266,7 @@ for id in range(MATRIX_SIZE):
 # For printing we will use a SatPrinter class.
 
 sp = satmaker.SatPrinter(vf, cc);
-file = open('input-3d.txt', 'wt')
+file = open('input-2x2x2-v2.txt', 'wt')
 sp.print(file)
 file.close()
 
