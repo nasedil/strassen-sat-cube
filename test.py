@@ -94,59 +94,159 @@ def test_xor_with_assignment_2():
                         assert (original == concluded)
 
 def test_xor_with_assignment_3():
-    """Check that our transformation of the <d = (a and e) xor (b and c)> is correct.
-
-    Check whether
-    d = (a and e) xor (b and c)
-    is equivalent to
-    (~a | ~e | ~b | ~c | ~d) ∧ (a ∨ b ∨ ~d) ∧ (e ∨ b ∨ ~d) ∧ (a ∨ c ∨ ~d) ∧ (e ∨ c ∨ ~d) ∧ (a ∨ ~b | ~c ∨ d) ∧ (e ∨ ~b | ~c ∨ d) ∧ (~a | ~e ∨ b ∨ d) ∧ (~a | ~e ∨ c ∨ d)
-    where a, b and c are boolean values.
+    """Check out big xor transformation.
     """
+    a = [True for i in range(16)]
+    b = [True for i in range(16)]
+    concluded = []
+
+    def try_b():
+        for b[1] in TF:
+            for b[2] in TF:
+                for b[3] in TF:
+                    for b[4] in TF:
+                        for b[5] in TF:
+                            for b[6] in TF:
+                                for b[7] in TF:
+                                    for b[8] in TF:
+                                        for b[9] in TF:
+                                            for b[10] in TF:
+                                                for b[11] in TF:
+                                                    for b[12] in TF:
+                                                        for b[13] in TF:
+                                                            for b[14] in TF:
+                                                                for b[15] in TF:
+                                                                    original = (c == ((a[1] and b[1]) != (a[2] and b[2]) != (a[3] and b[3]) != (a[4] and b[4]) != (a[5] and b[5]) != (a[6] and b[6]) != (a[7] and b[7]) != (a[8] and b[8]) != (a[9] and b[9]) != (a[10] and b[10]) != (a[11] and b[11]) != (a[12] and b[12]) != (a[13] and b[13]) != (a[14] and b[14]) != (a[15] and b[15])))
+                                                                    if not original:
+                                                                        positive = []
+                                                                        negative = []
+                                                                        if c:
+                                                                            negative.append('c')
+                                                                        else:
+                                                                            positive.append('c')
+                                                                        for i in range (1,16):
+                                                                            if a[i]:
+                                                                                negative.append('a' + str(i))
+                                                                            else:
+                                                                                positive.append('a' + str(i))
+                                                                            if b[i]:
+                                                                                negative.append('b' + str(i))
+                                                                            else:
+                                                                                positive.append('b' + str(i))
+                                                                        clause = {}
+                                                                        clause['positive'] = positive
+                                                                        clause['negative'] = negative
+                                                                        concluded.append(clause)
+
     for c in TF:
-        for a1 in TF:
-            for a2 in TF:
-                for a3 in TF:
-                    for a4 in TF:
-                        for a5 in TF:
-                            for a6 in TF:
-                                for a7 in TF:
-                                    for a8 in TF:
-                                        for a9 in TF:
-                                            for a10 in TF:
-                                                for a11 in TF:
-                                                    for a12 in TF:
-                                                        for a13 in TF:
-                                                            for a14 in TF:
-                                                                for a15 in TF:
-                                                                    for b1 in TF:
-                                                                        for b2 in TF:
-                                                                            for b3 in TF:
-                                                                                for b4 in TF:
-                                                                                    for b5 in TF:
-                                                                                        for b6 in TF:
-                                                                                            for b7 in TF:
-                                                                                                for b8 in TF:
-                                                                                                    for b9 in TF:
-                                                                                                        for b10 in TF:
-                                                                                                            for b11 in TF:
-                                                                                                                for b12 in TF:
-                                                                                                                    for b13 in TF:
-                                                                                                                        for b14 in TF:
-                                                                                                                            for b15 in TF:
-                                                                                                                                original = (c == ((a1 and b1) != (a2 and b2) != (a3 and b3) != (a4 and b4) != (a5 and b5) != (a6 and b6) != (a7 and b7) != (a8 and b8) != (a9 and b9) != (a10 and b10) != (a11 and b11) != (a12 and b12) != (a13 and b13) != (a14 and b14) != (a15 and b15)))
-                                                                                                                                concluded = ((not c or not a1 or not b1 or not a2 or not b2 or not a3 or not b3 or not a4 or not b4 or not a5 or not b5 or not a6 or not b6 or not a7 or not b7 or not a8 or not b8 or not a9 or not b9 or not a10 or not b10 or not a11 or not b11 or not a12 or not b12 or not a13 or not b13 or not a14 or not b14 or not a15 or not b15) and
-                                                                                                                                             (a or b or not d) and
-                                                                                                                                             (a or c or not d) and
-                                                                                                                                             (e or b or not d) and
-                                                                                                                                             (e or c or not d) and
-                                                                                                                                             (a or not b or not c or d) and
-                                                                                                                                             (e or not b or not c or d) and
-                                                                                                                                             (not a or not e or b or d) and
-                                                                                                                                             (not a or not e or c or d))
-                                                                                                                                assert (original == concluded)
+        for a[1] in TF:
+            for a[2] in TF:
+                for a[3] in TF:
+                    for a[4] in TF:
+                        for a[5] in TF:
+                            for a[6] in TF:
+                                for a[7] in TF:
+                                    for a[8] in TF:
+                                        for a[9] in TF:
+                                            for a[10] in TF:
+                                                for a[11] in TF:
+                                                    for a[12] in TF:
+                                                        for a[13] in TF:
+                                                            for a[14] in TF:
+                                                                for a[15] in TF:
+                                                                    try_b()
+    print(str(concluded))
+
+
+def test_xor_with_assignment_4():
+    """Check out big xor transformation.
+    """
+    a = [True for i in range(6)]
+    b = [True for i in range(6)]
+    concluded = []
+
+    def try_b():
+        for b[1] in TF:
+            for b[2] in TF:
+                for b[3] in TF:
+                    for b[4] in TF:
+                        for b[5] in TF:
+                            original = (c == ((a[1] and b[1]) != (a[2] and b[2]) != (a[3] and b[3]) != (a[4] and b[4]) != (a[5] and b[5])))
+                            if not original:
+                                positive = []
+                                negative = []
+                                if c:
+                                    negative.append('c')
+                                else:
+                                    positive.append('c')
+                                for i in range (1,6):
+                                    if a[i]:
+                                        negative.append('a' + str(i))
+                                    else:
+                                        positive.append('a' + str(i))
+                                    if b[i]:
+                                        negative.append('b' + str(i))
+                                    else:
+                                        positive.append('b' + str(i))
+                                clause = {}
+                                clause['positive'] = positive
+                                clause['negative'] = negative
+                                concluded.append(clause)
+
+    for c in TF:
+        for a[1] in TF:
+            for a[2] in TF:
+                for a[3] in TF:
+                    for a[4] in TF:
+                        for a[5] in TF:
+                            try_b()
+    print(str(len(concluded)))
+
+
+def test_xor_with_assignment_5():
+    """Check out big xor transformation.
+    """
+    a = [True for i in range(6)]
+    b = [True for i in range(6)]
+    concluded = []
+
+    def try_b():
+        for b[1] in TF:
+            for b[2] in TF:
+                original = (c == ((a[1] and b[1]) != (a[2] and b[2])))
+                print(original)
+                if not original:
+                    positive = []
+                    negative = []
+                    if c:
+                        negative.append('c')
+                    else:
+                        positive.append('c')
+                    for i in range (1,3):
+                        if a[i]:
+                            negative.append('a' + str(i))
+                        else:
+                            positive.append('a' + str(i))
+                        if b[i]:
+                            negative.append('b' + str(i))
+                        else:
+                            positive.append('b' + str(i))
+                    clause = {}
+                    clause['positive'] = positive
+                    clause['negative'] = negative
+                    concluded.append(clause)
+
+    for c in TF:
+        for a[1] in TF:
+            for a[2] in TF:
+                try_b()
+    for clause in concluded:
+        print(clause['positive'])
+        print(clause['negative'])
+
 
 test_and_assignment()
 test_double_and_assignment()
 test_xor_with_assignment_1()
 test_xor_with_assignment_2()
-test_xor_with_assignment_3()
+test_xor_with_assignment_5()
