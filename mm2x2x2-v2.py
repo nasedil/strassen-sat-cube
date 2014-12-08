@@ -259,7 +259,7 @@ for id in range(MATRIX_SIZE):
                                                 else:
                                                     cc.add(positive=[], negative=[t[MULTIPLICATION_VECTORS-2][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]])
 
-# We have in the end 65504 variables and 391168 constraints.
+# We have in the end 65504 variables, 391168 clauses, 1281024 literals.
 
 # Now we will output all the constraints to a file that will be an input to
 # a SAT solver.

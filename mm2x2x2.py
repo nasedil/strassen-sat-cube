@@ -306,14 +306,14 @@ for id in range(MATRIX_SIZE):
                                                 else:
                                                     cc.add(positive=[], negative=[t[MULTIPLICATION_VECTORS-2][id][jd][ld][ia][ja][la][ib][jb][lb][ic][jc][lc]])
 
-# We have in the end 127904 variables and 443712 constraints.
+# We have in the end 127904 variables, 443712 clauses, 1182784 literals.
 
 # Now we will output all the constraints to a file that will be an input to
 # a SAT solver.
 # For printing we will use a SatPrinter class.
 
 sp = satmaker.SatPrinter(vf, cc);
-file = open('input-2x2x2-v1', 'wt')
+file = open('input-2x2x2-v1.txt', 'wt')
 sp.print(file)
 file.close()
 '''
