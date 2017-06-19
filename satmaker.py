@@ -2,7 +2,7 @@
 """
 Created on Sat Oct 11 19:39:06 2014
 
-@author: genio
+@author: Eugene Petkevich
 """
 
 class VariableFactory(object):

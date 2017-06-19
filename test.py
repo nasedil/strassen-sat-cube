@@ -2,7 +2,7 @@
 """
 Created on Mon Oct 13 21:59:29 2014
 
-@author: genio
+@author: Eugene Petkevich
 """
 
 TF = [True, False]

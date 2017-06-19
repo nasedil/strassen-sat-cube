@@ -2,7 +2,7 @@
 """
 Created on Sat Oct 11 19:31:50 2014
 
-@author: genio
+@author: Eugene Petkevich
 """
 
 import satmaker
